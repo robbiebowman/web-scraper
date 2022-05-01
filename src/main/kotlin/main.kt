@@ -32,13 +32,13 @@ data class Profile(val name: String, val lifeRange: String, val occupation: Stri
 data class Title(val name: String, val lifeRange: String, val occupation: String?)
 
 suspend fun getProfiles(): List<Profile> = coroutineScope {
-    val runningRequests = mutableListOf<Deferred<List<Profile>>>()
-    (1..2).forEach { pageNum ->
+    (1..89).map { pageNum ->
         val target = getUrl(pageNum)
-        runningRequests.add(async {
+        delay(2000)
+        async {
             skrape(HttpFetcher) {
                 request {
-                    timeout = 20000
+                    timeout = 120000
                     url = target
                 }
 
@@ -68,8 +68,6 @@ suspend fun getProfiles(): List<Profile> = coroutineScope {
                     }
                 }
             }
-        })
-    }
-    val results = runningRequests.awaitAll().flatten()
-    results
+        }
+    }.awaitAll().flatten()
 }
